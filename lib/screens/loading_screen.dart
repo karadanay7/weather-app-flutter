@@ -1,6 +1,10 @@
+
+
+import 'package:clima/screens/location_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/services/location.dart';
-import 'package:http/http.dart' as http;
+import 'package:clima/services/networking.dart';
+
 
 
 // ignore: use_key_in_widget_constructors
@@ -11,28 +15,42 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  static const apiKey = '40ea811110f1f16c3f20f3afb6ea6c6f';
+  late double latitude;
+  late double longitude;
+
   @override
   void initState() {
     super.initState();
+    getLocationData();
+  }
 
-    print('this line of code is triggred');
-    getData();
-  }
-  void getLocation() async{
+  void getLocationData() async {
     Location location = Location();
-     await location.getCurrentLocation();
-     print(location.longitude);
-     print(location.latitude);
+    await location.getCurrentLocation();
+    longitude = location.longitude;
+    latitude = location.latitude;
+    NetworkHelper networkHelper = NetworkHelper(
+      uri: Uri(
+        scheme: 'https',
+        host: 'api.openweathermap.org',
+        path: 'data/2.5/weather',
+        queryParameters: {
+          'lat': latitude.toString(),
+          'lon': longitude.toString(),
+          'appid': apiKey,
+        },
+      ),
+    );
+    var weatherData = await networkHelper.getData();
+    Navigator.push(context, MaterialPageRoute(builder:(context) {
+      return LocationScreen();
+    }));
+    // Handle weatherData as needed
   }
-  void getData() async {
-  var url = Uri(scheme: 'https', host:'api.openweathermap.org', path: 'data/2.5/weather',queryParameters: { 'lat' : '44.34', 'lon' : '10.99', 'appid' : '40ea811110f1f16c3f20f3afb6ea6c6f'  } );
-  var response = await http.get(url);
-   print(response.body);
-   print(url);
-  }
+
   @override
   Widget build(BuildContext context) {
-    getLocation();
-    return Scaffold();
+    return const Scaffold();
   }
 }
