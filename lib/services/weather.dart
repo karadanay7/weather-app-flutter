@@ -1,6 +1,6 @@
 import 'package:clima/services/location.dart';
 import 'package:clima/services/networking.dart';
-const apiKey = '40ea811110f1f16c3f20f3afb6ea6c6f';
+const apiKey = 'YOUR API KEY HERE';
 late double latitude;
 late double longitude;
 class WeatherModel {
